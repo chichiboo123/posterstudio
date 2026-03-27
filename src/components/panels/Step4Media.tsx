@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { usePoster, genId } from '../../store/posterStore';
+import { usePoster, genId, useTheme } from '../../store/posterStore';
 import { t } from '../../i18n';
 import { emojiCategories } from '../../data/emojiData';
 import type { PosterElement } from '../../types';
@@ -7,6 +7,7 @@ import type { PosterElement } from '../../types';
 const EMOJIS_PER_PAGE = 24;
 
 export default function Step4Media() {
+  const tc = useTheme();
   const { state, dispatch, showToast, canvasSize } = usePoster();
   const { language } = state;
   const { elements, selectedElementId } = state.poster;
@@ -68,17 +69,15 @@ export default function Step4Media() {
       <div className="flex gap-2 p-1 bg-gray-100 rounded-xl">
         <button
           onClick={() => setTab('emoji')}
-          className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
-            tab === 'emoji' ? 'bg-white shadow text-amber-600' : 'text-gray-500'
-          }`}
+          className="flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all"
+          style={tab === 'emoji' ? { background: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', color: tc.accentText } : { color: '#6B7280' }}
         >
           😊 {t(language, 'addEmoji')}
         </button>
         <button
           onClick={() => setTab('image')}
-          className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${
-            tab === 'image' ? 'bg-white shadow text-amber-600' : 'text-gray-500'
-          }`}
+          className="flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all"
+          style={tab === 'image' ? { background: 'white', boxShadow: '0 1px 3px rgba(0,0,0,0.1)', color: tc.accentText } : { color: '#6B7280' }}
         >
           <span className="material-icons align-middle mr-1" style={{ fontSize: 16 }}>image</span>
           {t(language, 'uploadImage')}
@@ -106,11 +105,10 @@ export default function Step4Media() {
                 <button
                   key={cat.id}
                   onClick={() => { setActiveCategory(cat.id); setPage(0); }}
-                  className={`flex items-center gap-1 px-2 py-1 rounded-lg text-xs transition-all ${
-                    activeCategory === cat.id
-                      ? 'bg-amber-100 text-amber-700 border border-amber-300'
-                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                  }`}
+                  className="flex items-center gap-1 px-2 py-1 rounded-lg text-xs transition-all border"
+                  style={activeCategory === cat.id
+                    ? { background: tc.accentLight, color: tc.accentText, borderColor: tc.accentBorder }
+                    : { background: '#F3F4F6', color: '#4B5563', borderColor: 'transparent' }}
                 >
                   <span>{cat.icon}</span>
                   <span>{language === 'ko' ? cat.label : cat.labelEn}</span>
@@ -125,7 +123,9 @@ export default function Step4Media() {
               <button
                 key={i}
                 onClick={() => addEmoji(item.emoji)}
-                className="text-2xl p-2 rounded-lg hover:bg-amber-50 transition-all hover:scale-110 active:scale-95"
+                className="text-2xl p-2 rounded-lg transition-all hover:scale-110 active:scale-95"
+                onMouseEnter={e => (e.currentTarget.style.background = tc.accentLight)}
+                onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
                 title={item.keywords[0]}
               >
                 {item.emoji}
@@ -158,14 +158,16 @@ export default function Step4Media() {
         <div className="flex flex-col gap-4">
           <div
             onClick={() => fileRef.current?.click()}
-            className="flex flex-col items-center gap-3 p-8 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-amber-400 hover:bg-amber-50 transition-all"
+            className="flex flex-col items-center gap-3 p-8 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer transition-all"
+            onMouseEnter={e => { e.currentTarget.style.borderColor = tc.accent; e.currentTarget.style.background = tc.accentLight; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = '#D1D5DB'; e.currentTarget.style.background = 'transparent'; }}
           >
             <span className="material-icons text-4xl text-gray-400">upload_file</span>
             <div className="text-sm text-gray-500 text-center">
               <div className="font-semibold">{t(language, 'uploadImage')}</div>
               <div className="text-xs mt-1">JPG, PNG, GIF</div>
             </div>
-            <button className="px-4 py-2 bg-amber-400 text-white rounded-lg font-medium text-sm hover:bg-amber-500 transition-all">
+            <button className="px-4 py-2 text-white rounded-lg font-medium text-sm transition-all" style={{ background: tc.accent }}>
               {language === 'ko' ? '파일 선택' : 'Choose File'}
             </button>
           </div>

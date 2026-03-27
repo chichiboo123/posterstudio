@@ -1,5 +1,5 @@
 import React from 'react';
-import { usePoster } from '../../store/posterStore';
+import { usePoster, useTheme } from '../../store/posterStore';
 import { t } from '../../i18n';
 import Step2Background from '../panels/Step2Background';
 import Step3Text from '../panels/Step3Text';
@@ -22,6 +22,7 @@ const stepTitles: Record<number, string> = {
 
 export default function ToolSidebar() {
   const { state, dispatch } = usePoster();
+  const tc = useTheme();
   const { language } = state;
   const { currentStep } = state.poster;
 
@@ -30,22 +31,26 @@ export default function ToolSidebar() {
   return (
     <div className="flex flex-col bg-white rounded-2xl shadow-lg overflow-hidden" style={{ width: 300, minWidth: 300 }}>
       {/* Header */}
-      <div className="flex items-center gap-2 px-4 py-3 bg-gradient-to-r from-amber-400 to-amber-500 text-white">
+      <div
+        className="flex items-center gap-2 px-4 py-3 text-white"
+        style={{ background: tc.gradient }}
+      >
         <span className="material-icons">{stepIcons[currentStep]}</span>
         <span className="font-semibold">{t(language, stepTitles[currentStep])}</span>
       </div>
 
-      {/* Step nav tabs (quick jump) */}
+      {/* Step nav tabs */}
       <div className="flex gap-1 p-2 border-b border-gray-100 overflow-x-auto">
         {[2, 3, 4, 5, 6].map(s => (
           <button
             key={s}
             onClick={() => dispatch({ type: 'SET_STEP', step: s })}
-            className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg text-xs transition-all flex-shrink-0 ${
+            className="flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg text-xs transition-all flex-shrink-0"
+            style={
               currentStep === s
-                ? 'bg-amber-100 text-amber-700'
-                : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600'
-            }`}
+                ? { background: tc.accentLight, color: tc.accentText }
+                : { color: '#9CA3AF' }
+            }
           >
             <span className="material-icons" style={{ fontSize: 18 }}>{stepIcons[s]}</span>
             <span style={{ fontSize: 10 }}>{t(language, stepTitles[s])}</span>

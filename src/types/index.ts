@@ -50,3 +50,4 @@ export interface PosterState {
 }
 
 export type Language = 'ko' | 'en';
+export type { Theme } from '../data/themes';

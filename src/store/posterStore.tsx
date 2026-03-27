@@ -1,11 +1,13 @@
-import React, { createContext, useContext, useReducer, useCallback, type ReactNode } from 'react';
+import React, { createContext, useContext, useReducer, useCallback, useEffect, type ReactNode } from 'react';
 import type { PosterState, PosterElement, Background, PerformanceInfo, Language } from '../types';
+import { type Theme, THEMES } from '../data/themes';
 
 // ─── State ───────────────────────────────────────────────────────────────────
 
 interface AppState {
   poster: PosterState;
   language: Language;
+  theme: Theme;
   toast: { id: number; message: string; type: 'success' | 'error' | 'info' } | null;
 }
 
@@ -15,7 +17,7 @@ const initialPoster: PosterState = {
   elements: [],
   background: {
     type: 'solid',
-    colors: ['#FFE5E5'],
+    colors: ['#FFFFFF'],
     gradientDirection: 'to-b',
   },
   performanceInfo: {},
@@ -25,6 +27,7 @@ const initialPoster: PosterState = {
 const initialState: AppState = {
   poster: initialPoster,
   language: 'ko',
+  theme: 'yellow',
   toast: null,
 };
 
@@ -45,6 +48,7 @@ type Action =
   | { type: 'MOVE_FORWARD'; id: string }
   | { type: 'MOVE_BACKWARD'; id: string }
   | { type: 'SET_LANGUAGE'; language: Language }
+  | { type: 'SET_THEME'; theme: Theme }
   | { type: 'SHOW_TOAST'; message: string; toastType: 'success' | 'error' | 'info' }
   | { type: 'HIDE_TOAST' }
   | { type: 'RESET' };
@@ -194,6 +198,9 @@ function reducer(state: AppState, action: Action): AppState {
     case 'SET_LANGUAGE':
       return { ...state, language: action.language };
 
+    case 'SET_THEME':
+      return { ...state, theme: action.theme };
+
     case 'SHOW_TOAST':
       return { ...state, toast: { id: Date.now(), message: action.message, type: action.toastType } };
 
@@ -201,7 +208,7 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, toast: null };
 
     case 'RESET':
-      return { ...initialState, language: state.language };
+      return { ...initialState, language: state.language, theme: state.theme };
 
     default:
       return state;
@@ -221,6 +228,19 @@ const PosterContext = createContext<PosterContextValue | null>(null);
 
 export function PosterProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+
+  // Apply CSS variables whenever theme changes
+  useEffect(() => {
+    const c = THEMES[state.theme];
+    const root = document.documentElement;
+    root.style.setProperty('--theme-accent',       c.accent);
+    root.style.setProperty('--theme-accent-hover', c.accentHover);
+    root.style.setProperty('--theme-accent-light', c.accentLight);
+    root.style.setProperty('--theme-accent-border',c.accentBorder);
+    root.style.setProperty('--theme-accent-text',  c.accentText);
+    root.style.setProperty('--theme-gradient',     c.gradient);
+    root.style.setProperty('--theme-hero-bg',      c.heroBg);
+  }, [state.theme]);
 
   const showToast = useCallback(
     (message: string, type: 'success' | 'error' | 'info' = 'success') => {
@@ -246,6 +266,12 @@ export function usePoster() {
   const ctx = useContext(PosterContext);
   if (!ctx) throw new Error('usePoster must be used within PosterProvider');
   return ctx;
+}
+
+// Convenience hook for theme colors
+export function useTheme() {
+  const { state } = usePoster();
+  return THEMES[state.theme];
 }
 
 export function genId() {
