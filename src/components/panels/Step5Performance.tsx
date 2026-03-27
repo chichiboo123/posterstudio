@@ -1,5 +1,5 @@
 import React from 'react';
-import { usePoster, genId } from '../../store/posterStore';
+import { usePoster, genId, useTheme } from '../../store/posterStore';
 import { t } from '../../i18n';
 import type { PerformanceInfo, PosterElement } from '../../types';
 
@@ -21,6 +21,7 @@ const fields: FieldConfig[] = [
 ];
 
 export default function Step5Performance() {
+  const tc = useTheme();
   const { state, dispatch, showToast } = usePoster();
   const { language } = state;
   const { performanceInfo, elements } = state.poster;
@@ -97,7 +98,8 @@ export default function Step5Performance() {
             <button
               onClick={() => insertField(field.key)}
               disabled={!performanceInfo[field.key]}
-              className="text-xs px-2 py-1 bg-amber-100 text-amber-700 rounded-lg hover:bg-amber-200 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              className="text-xs px-2 py-1 rounded-lg transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ background: tc.accentLight, color: tc.accentText }}
             >
               {t(language, 'insertBtn')}
             </button>
@@ -107,7 +109,9 @@ export default function Step5Performance() {
             value={performanceInfo[field.key] ?? ''}
             onChange={e => updateInfo(field.key, e.target.value)}
             placeholder={field.placeholder[language]}
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-400 transition-colors"
+            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none transition-colors"
+            onFocus={e => (e.currentTarget.style.borderColor = tc.accent)}
+            onBlur={e => (e.currentTarget.style.borderColor = '#E5E7EB')}
           />
         </div>
       ))}
@@ -115,7 +119,10 @@ export default function Step5Performance() {
       <button
         onClick={insertAll}
         disabled={!fields.some(f => performanceInfo[f.key])}
-        className="flex items-center justify-center gap-2 w-full py-3 bg-amber-400 hover:bg-amber-500 text-white font-semibold rounded-xl transition-all shadow-sm hover:shadow disabled:opacity-40 disabled:cursor-not-allowed"
+        className="flex items-center justify-center gap-2 w-full py-3 text-white font-semibold rounded-xl transition-all shadow-sm hover:shadow disabled:opacity-40 disabled:cursor-not-allowed"
+        style={{ background: tc.accent }}
+        onMouseEnter={e => (e.currentTarget.style.background = tc.accentHover)}
+        onMouseLeave={e => (e.currentTarget.style.background = tc.accent)}
       >
         <span className="material-icons" style={{ fontSize: 20 }}>playlist_add</span>
         {t(language, 'insertAll')}

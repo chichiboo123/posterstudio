@@ -1,10 +1,11 @@
 import React, { useCallback } from 'react';
-import { usePoster, genId } from '../../store/posterStore';
+import { usePoster, genId, useTheme } from '../../store/posterStore';
 import { t } from '../../i18n';
 import { fontOptions, textColorPresets } from '../../data/fontData';
 import type { PosterElement, ElementStyle } from '../../types';
 
 export default function Step3Text() {
+  const tc = useTheme();
   const { state, dispatch, showToast, canvasSize } = usePoster();
   const { language } = state;
   const { elements, selectedElementId } = state.poster;
@@ -61,7 +62,10 @@ export default function Step3Text() {
     <div className="flex flex-col gap-4 p-4 overflow-y-auto" style={{ maxHeight: '70vh' }}>
       <button
         onClick={addText}
-        className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-amber-400 hover:bg-amber-500 text-white font-semibold rounded-xl transition-all shadow-sm hover:shadow"
+        className="flex items-center justify-center gap-2 w-full py-3 px-4 text-white font-semibold rounded-xl transition-all shadow-sm hover:shadow"
+        style={{ background: tc.accent }}
+        onMouseEnter={e => (e.currentTarget.style.background = tc.accentHover)}
+        onMouseLeave={e => (e.currentTarget.style.background = tc.accent)}
       >
         <span className="material-icons" style={{ fontSize: 20 }}>text_fields</span>
         {t(language, 'addText')}
@@ -78,11 +82,10 @@ export default function Step3Text() {
               <button
                 key={el.id}
                 onClick={() => dispatch({ type: 'SELECT_ELEMENT', id: el.id })}
-                className={`flex items-center gap-2 p-2 rounded-lg text-left text-sm transition-all ${
-                  selectedElementId === el.id
-                    ? 'bg-amber-50 border border-amber-300 text-amber-800'
-                    : 'bg-gray-50 hover:bg-gray-100 text-gray-700'
-                }`}
+                className="flex items-center gap-2 p-2 rounded-lg text-left text-sm transition-all border"
+                style={selectedElementId === el.id
+                  ? { background: tc.accentLight, borderColor: tc.accentBorder, color: tc.accentText }
+                  : { background: '#F9FAFB', borderColor: 'transparent', color: '#374151' }}
               >
                 <span className="material-icons" style={{ fontSize: 16 }}>text_fields</span>
                 <span className="truncate">{el.content}</span>
