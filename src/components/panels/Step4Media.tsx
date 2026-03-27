@@ -16,6 +16,7 @@ export default function Step4Media() {
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(0);
   const [tab, setTab] = useState<'emoji' | 'image'>('emoji');
+  const [deviceEmojiInput, setDeviceEmojiInput] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
   const mediaElements = elements.filter(e => e.type === 'emoji' || e.type === 'image');
@@ -86,6 +87,38 @@ export default function Step4Media() {
 
       {tab === 'emoji' ? (
         <>
+          {/* Device emoji input */}
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={deviceEmojiInput}
+              onChange={e => setDeviceEmojiInput(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && deviceEmojiInput.trim()) {
+                  addEmoji(deviceEmojiInput.trim());
+                  setDeviceEmojiInput('');
+                }
+              }}
+              placeholder={language === 'ko' ? '기기 이모지 입력 😊' : 'Type device emoji 😊'}
+              className="flex-1 border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none transition-colors"
+              onFocus={e => (e.currentTarget.style.borderColor = tc.accent)}
+              onBlur={e => (e.currentTarget.style.borderColor = '#E5E7EB')}
+            />
+            <button
+              onClick={() => {
+                if (deviceEmojiInput.trim()) {
+                  addEmoji(deviceEmojiInput.trim());
+                  setDeviceEmojiInput('');
+                }
+              }}
+              disabled={!deviceEmojiInput.trim()}
+              className="px-3 py-2 rounded-xl text-white text-sm font-medium transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+              style={{ background: tc.accent }}
+            >
+              {t(language, 'deviceEmojiAdd')}
+            </button>
+          </div>
+
           {/* Search */}
           <div className="relative">
             <span className="material-icons absolute left-3 top-2.5 text-gray-400" style={{ fontSize: 18 }}>search</span>

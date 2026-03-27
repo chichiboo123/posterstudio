@@ -6,14 +6,17 @@ import { gradientDirections } from '../../data/fontData';
 
 interface Props {
   isExporting?: boolean;
+  scale?: number;
 }
 
-export default function PosterCanvas({ isExporting = false }: Props) {
+export default function PosterCanvas({ isExporting = false, scale = 1 }: Props) {
   const { state, dispatch, canvasSize } = usePoster();
   const { poster } = state;
   const canvasRef = useRef<HTMLDivElement>(null);
 
   const [contextMenu, setContextMenu] = useState<{ x: number; y: number; elementId: string } | null>(null);
+
+  const sc = isExporting ? 1 : scale;
 
   const getBackgroundStyle = (): React.CSSProperties => {
     const { background } = poster;
@@ -35,18 +38,14 @@ export default function PosterCanvas({ isExporting = false }: Props) {
   const handleContextMenu = useCallback((e: React.MouseEvent, elementId: string) => {
     e.preventDefault();
     e.stopPropagation();
-    // Get position relative to viewport
     setContextMenu({ x: e.clientX, y: e.clientY, elementId });
     dispatch({ type: 'SELECT_ELEMENT', id: elementId });
   }, [dispatch]);
 
   const sortedElements = [...poster.elements].sort((a, b) => a.zIndex - b.zIndex);
 
-  // Scale for display (canvas is shown at a reasonable size on screen)
-  const displayScale = 1;
-
   return (
-    <div className="relative">
+    <div style={{ position: 'relative', width: canvasSize.width * sc, height: canvasSize.height * sc }}>
       <div
         id="poster-canvas"
         ref={canvasRef}
@@ -54,7 +53,7 @@ export default function PosterCanvas({ isExporting = false }: Props) {
         style={{
           width: canvasSize.width,
           height: canvasSize.height,
-          transform: `scale(${displayScale})`,
+          transform: `scale(${sc})`,
           transformOrigin: 'top left',
           ...getBackgroundStyle(),
         }}
@@ -68,6 +67,7 @@ export default function PosterCanvas({ isExporting = false }: Props) {
             canvasWidth={canvasSize.width}
             canvasHeight={canvasSize.height}
             onContextMenu={handleContextMenu}
+            scale={sc}
           />
         ))}
       </div>
@@ -83,5 +83,3 @@ export default function PosterCanvas({ isExporting = false }: Props) {
     </div>
   );
 }
-
-export { };

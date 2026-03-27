@@ -28,8 +28,17 @@ export default function ToolSidebar() {
 
   if (currentStep === 1) return null;
 
+  const handleReset = () => {
+    if (window.confirm(language === 'ko'
+      ? '모든 작업 내용이 초기화됩니다. 계속하시겠습니까?'
+      : 'All work will be reset. Continue?'
+    )) {
+      dispatch({ type: 'RESET' });
+    }
+  };
+
   return (
-    <div className="flex flex-col bg-white rounded-2xl shadow-lg overflow-hidden" style={{ width: 300, minWidth: 300 }}>
+    <div className="flex flex-col bg-white rounded-2xl shadow-lg overflow-hidden w-full">
       {/* Header */}
       <div
         className="flex items-center gap-2 px-4 py-3 text-white"
@@ -39,8 +48,8 @@ export default function ToolSidebar() {
         <span className="font-semibold">{t(language, stepTitles[currentStep])}</span>
       </div>
 
-      {/* Step nav tabs */}
-      <div className="flex gap-1 p-2 border-b border-gray-100 overflow-x-auto">
+      {/* Step nav tabs + reset */}
+      <div className="flex items-center gap-1 p-2 border-b border-gray-100 overflow-x-auto">
         {[2, 3, 4, 5, 6].map(s => (
           <button
             key={s}
@@ -56,6 +65,17 @@ export default function ToolSidebar() {
             <span style={{ fontSize: 10 }}>{t(language, stepTitles[s])}</span>
           </button>
         ))}
+
+        {/* Reset icon button */}
+        <div className="ml-auto flex-shrink-0">
+          <button
+            onClick={handleReset}
+            className="flex items-center justify-center w-8 h-8 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
+            title={language === 'ko' ? '초기화' : 'Reset'}
+          >
+            <span className="material-icons" style={{ fontSize: 18 }}>restart_alt</span>
+          </button>
+        </div>
       </div>
 
       {/* Panel content */}
