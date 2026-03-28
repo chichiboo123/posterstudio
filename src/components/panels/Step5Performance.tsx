@@ -13,7 +13,7 @@ interface FieldConfig {
 }
 
 const fields: FieldConfig[] = [
-  { key: 'date', labelKey: 'perfDate', placeholder: { ko: '2025년 3월 27일 19:30', en: 'March 27, 2025 7:30PM' }, icon: 'event' },
+  { key: 'date', labelKey: 'perfDate', placeholder: { ko: '2026년 3월 27일 19:30', en: 'March 27, 2026 7:30PM' }, icon: 'event' },
   { key: 'venue', labelKey: 'perfVenue', placeholder: { ko: '세종문화회관 대극장', en: 'Grand Theater' }, icon: 'location_on' },
   { key: 'cast', labelKey: 'perfCast', placeholder: { ko: '홍길동, 김민지, 이수현', en: 'John, Jane, Bob' }, icon: 'people' },
   { key: 'crew', labelKey: 'perfCrew', placeholder: { ko: '연출: 김감독, 음악: 이작곡', en: 'Director: Kim, Music: Lee' }, icon: 'manage_accounts' },

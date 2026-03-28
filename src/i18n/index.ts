@@ -92,6 +92,12 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     elementsOnPoster: '포스터 요소',
     noElements: '아직 요소가 없습니다',
     layers: '레이어',
+    // Help
+    helpBtn: '도움말',
+    helpTitle: '사용 방법',
+    helpClose: '닫기',
+    // Device emoji
+    deviceEmojiAdd: '추가',
   },
   en: {
     appName: 'Musical Poster Studio',
@@ -182,6 +188,12 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     elementsOnPoster: 'Poster Elements',
     noElements: 'No elements yet',
     layers: 'Layers',
+    // Help
+    helpBtn: 'Help',
+    helpTitle: 'How to Use',
+    helpClose: 'Close',
+    // Device emoji
+    deviceEmojiAdd: 'Add',
   }
 };
 
