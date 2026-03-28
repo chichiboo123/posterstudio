@@ -24,12 +24,48 @@ const initialPoster: PosterState = {
   selectedElementId: null,
 };
 
-const initialState: AppState = {
-  poster: initialPoster,
-  language: 'ko',
-  theme: 'yellow',
-  toast: null,
-};
+// ─── URL state (link sharing) ─────────────────────────────────────────────────
+
+/** Decode poster state from the URL hash (#state=...) on page load. */
+function decodeStateFromUrl(): PosterState | null {
+  try {
+    if (typeof window === 'undefined') return null;
+    const m = window.location.hash.match(/[#&]?state=([A-Za-z0-9_-]+)/);
+    if (!m) return null;
+    const base64 = m[1].replace(/-/g, '+').replace(/_/g, '/');
+    const json = decodeURIComponent(escape(atob(base64)));
+    const poster = JSON.parse(json) as PosterState;
+    // Recipients should see the canvas, not the orientation picker
+    if (poster.currentStep <= 1) poster.currentStep = 2;
+    poster.selectedElementId = null;
+    return poster;
+  } catch {
+    return null;
+  }
+}
+
+/** Encode poster state into a URL-safe base64 string. */
+export function encodeStateForUrl(poster: PosterState): string {
+  const json = JSON.stringify({ ...poster, selectedElementId: null });
+  return btoa(unescape(encodeURIComponent(json)))
+    .replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+/** Compute the full shareable URL for the current poster. */
+export function buildShareUrl(poster: PosterState): string {
+  const encoded = encodeStateForUrl(poster);
+  return `${window.location.origin}${window.location.pathname}#state=${encoded}`;
+}
+
+function getInitialState(): AppState {
+  const urlPoster = decodeStateFromUrl();
+  return {
+    poster: urlPoster ?? initialPoster,
+    language: 'ko',
+    theme: 'blue',
+    toast: null,
+  };
+}
 
 // ─── Actions ─────────────────────────────────────────────────────────────────
 
@@ -208,7 +244,7 @@ function reducer(state: AppState, action: Action): AppState {
       return { ...state, toast: null };
 
     case 'RESET':
-      return { ...initialState, language: state.language, theme: state.theme };
+      return { poster: initialPoster, language: state.language, theme: state.theme, toast: null };
 
     default:
       return state;
@@ -227,7 +263,8 @@ interface PosterContextValue {
 const PosterContext = createContext<PosterContextValue | null>(null);
 
 export function PosterProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  // Use lazy initializer so URL hash is read once at mount time
+  const [state, dispatch] = useReducer(reducer, undefined, getInitialState);
 
   // Apply CSS variables whenever theme changes
   useEffect(() => {

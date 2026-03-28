@@ -98,6 +98,11 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     helpClose: '닫기',
     // Device emoji
     deviceEmojiAdd: '추가',
+    // Export
+    exportJpg: 'JPG',
+    exportLink: '링크',
+    linkCopied: '링크가 클립보드에 복사되었습니다!',
+    linkTooLarge: '포스터에 이미지가 포함되어 링크가 매우 깁니다. 일부 브라우저에서 열리지 않을 수 있습니다.',
   },
   en: {
     appName: 'Musical Poster Studio',
@@ -194,6 +199,11 @@ const translations: Record<Language, Record<TranslationKey, string>> = {
     helpClose: 'Close',
     // Device emoji
     deviceEmojiAdd: 'Add',
+    // Export
+    exportJpg: 'JPG',
+    exportLink: 'Link',
+    linkCopied: 'Link copied to clipboard!',
+    linkTooLarge: 'Poster contains images — link may be very long and may not open in all browsers.',
   }
 };
 
