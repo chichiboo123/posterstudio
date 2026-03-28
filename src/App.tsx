@@ -351,29 +351,32 @@ function Footer() {
 }
 
 // ─── Canvas scale helper ──────────────────────────────────────────────────────
-// Calculates the canvas display scale based on the container width
+// Callback ref so the observer fires the moment the element actually mounts.
+// A regular ref + useEffect would miss the step-1 → step-2 transition because
+// canvasWidth never changes and the effect never re-runs.
 function useCanvasScale(canvasWidth: number) {
-  const containerRef = useRef<HTMLDivElement>(null);
   const [scale, setScale] = useState(1);
+  const obsRef = useRef<ResizeObserver | null>(null);
 
-  useEffect(() => {
-    const update = (width: number) => {
-      const available = Math.max(60, width - 16);
-      setScale(Math.min(1, available / canvasWidth));
-    };
+  const containerRef = useCallback(
+    (el: HTMLDivElement | null) => {
+      obsRef.current?.disconnect();
+      obsRef.current = null;
+      if (!el) return;
+      const update = () => {
+        const available = Math.max(60, el.clientWidth - 16);
+        setScale(Math.min(1, available / canvasWidth));
+      };
+      update();
+      const obs = new ResizeObserver(update);
+      obs.observe(el);
+      obsRef.current = obs;
+    },
+    [canvasWidth],
+  );
 
-    const el = containerRef.current;
-    if (!el) return;
-    update(el.clientWidth);
-
-    const obs = new ResizeObserver(entries => {
-      for (const entry of entries) {
-        update(entry.contentRect.width);
-      }
-    });
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, [canvasWidth]);
+  // Cleanup on unmount
+  useEffect(() => () => { obsRef.current?.disconnect(); }, []);
 
   return { containerRef, scale };
 }
