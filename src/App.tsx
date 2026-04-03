@@ -11,7 +11,7 @@ import Toast from './components/common/Toast';
 const TOTAL_STEPS = 6;
 const HEADER_HEIGHT = 52;
 const FOOTER_HEIGHT = 40;
-const APP_BODY_MIN_HEIGHT = `calc(100vh - ${HEADER_HEIGHT + FOOTER_HEIGHT}px)`;
+const APP_BODY_MIN_HEIGHT = `calc(100dvh - ${HEADER_HEIGHT + FOOTER_HEIGHT}px)`;
 
 const stepConfig = [
   { icon: 'aspect_ratio',        titleKey: 'step1' },
@@ -422,16 +422,19 @@ function MainContent() {
     <main className="flex-1" style={{ background: '#f0f0f5' }}>
       {/* Single responsive layout: canvas first in DOM (top on mobile, center on desktop) */}
       <div
-        className="flex flex-col md:flex-row gap-2 p-2 items-start"
+        className="flex flex-col md:flex-row gap-1.5 md:gap-2 p-1.5 md:p-2 items-stretch"
         style={{ minHeight: APP_BODY_MIN_HEIGHT }}
       >
 
         {/* Canvas — order-first on mobile, order-2 on desktop */}
         <div
           ref={containerRef}
-          className="md:order-2 flex-1 min-w-0 w-full"
+          className="md:order-2 flex-1 min-w-0 w-full flex"
         >
-          <div className="bg-white rounded-xl shadow-md p-2">
+          <div
+            className="bg-white rounded-xl shadow-md p-2 w-full flex flex-col"
+            style={{ minHeight: '100%' }}
+          >
             {/* Nav bar above canvas */}
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs text-gray-400 flex items-center gap-1">
@@ -462,8 +465,8 @@ function MainContent() {
                 )}
               </div>
             </div>
-            {/* Canvas — centered in its container */}
-            <div className="flex justify-center">
+            {/* Canvas — centered and stretched to consume remaining height */}
+            <div className="flex-1 flex justify-center items-start md:items-center pb-1">
               <PosterCanvas scale={canvasScale} />
             </div>
           </div>
