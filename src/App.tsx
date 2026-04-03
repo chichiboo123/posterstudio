@@ -12,6 +12,9 @@ const TOTAL_STEPS = 6;
 const HEADER_HEIGHT = 52;
 const FOOTER_HEIGHT = 40;
 const APP_BODY_MIN_HEIGHT = `calc(100dvh - ${HEADER_HEIGHT + FOOTER_HEIGHT}px)`;
+const MIN_ZOOM = 0.5;
+const MAX_ZOOM = 2;
+const ZOOM_STEP = 0.1;
 
 const stepConfig = [
   { icon: 'aspect_ratio',        titleKey: 'step1' },
@@ -391,6 +394,10 @@ function MainContent() {
   const { currentStep } = state.poster;
   const { language } = state;
   const { containerRef, scale: canvasScale } = useCanvasScale(canvasSize.width);
+  const [zoom, setZoom] = useState(1);
+  const effectiveScale = canvasScale * zoom;
+
+  const zoomLabel = `${Math.round(zoom * 100)}%`;
 
   if (currentStep === 1) {
     return (
@@ -436,12 +443,37 @@ function MainContent() {
             style={{ minHeight: '100%' }}
           >
             {/* Nav bar above canvas */}
-            <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center justify-between mb-2 gap-2">
               <span className="text-xs text-gray-400 flex items-center gap-1">
                 <span className="material-icons" style={{ fontSize: 13 }}>aspect_ratio</span>
                 {canvasSize.width} × {canvasSize.height}
               </span>
-              <div className="flex gap-1.5">
+              <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 rounded-lg border border-gray-200 px-1 py-0.5 bg-gray-50">
+                  <button
+                    onClick={() => setZoom((z) => Math.max(MIN_ZOOM, Number((z - ZOOM_STEP).toFixed(2))))}
+                    disabled={zoom <= MIN_ZOOM}
+                    className="w-6 h-6 rounded-md flex items-center justify-center text-gray-600 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    aria-label="Zoom out"
+                  >
+                    <span className="material-icons" style={{ fontSize: 14 }}>remove</span>
+                  </button>
+                  <button
+                    onClick={() => setZoom(1)}
+                    className="text-[11px] font-semibold text-gray-600 px-1.5 min-w-[52px]"
+                    title={language === 'ko' ? '확대 배율 초기화' : 'Reset zoom'}
+                  >
+                    {zoomLabel}
+                  </button>
+                  <button
+                    onClick={() => setZoom((z) => Math.min(MAX_ZOOM, Number((z + ZOOM_STEP).toFixed(2))))}
+                    disabled={zoom >= MAX_ZOOM}
+                    className="w-6 h-6 rounded-md flex items-center justify-center text-gray-600 hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    aria-label="Zoom in"
+                  >
+                    <span className="material-icons" style={{ fontSize: 14 }}>add</span>
+                  </button>
+                </div>
                 {currentStep > 2 && (
                   <button
                     onClick={() => dispatch({ type: 'SET_STEP', step: currentStep - 1 })}
@@ -466,8 +498,8 @@ function MainContent() {
               </div>
             </div>
             {/* Canvas — centered and stretched to consume remaining height */}
-            <div className="flex-1 flex justify-center items-start md:items-center pb-1">
-              <PosterCanvas scale={canvasScale} />
+            <div className="flex-1 flex justify-center items-start md:items-center pb-1 overflow-auto">
+              <PosterCanvas scale={effectiveScale} />
             </div>
           </div>
         </div>
